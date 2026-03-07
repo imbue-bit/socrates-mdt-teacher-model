@@ -43,6 +43,14 @@ def parse_args():
 
     parser.add_argument("--input_files", type=str, default='../data/example_sop.txt',
                         help="Input raw text file (or comma-separated list of files).")
+    parser.add_argument("--use_hf_dataset", type=str2bool, default=False,
+                        help="Whether to use Hugging Face dataset instead of input files.")
+    parser.add_argument("--hf_dataset_name", type=str, default='wikitext',
+                        help="Name of the Hugging Face dataset to use.")
+    parser.add_argument("--hf_dataset_config", type=str, default='wikitext-103-raw-v1',
+                        help="Configuration of the Hugging Face dataset.")
+    parser.add_argument("--hf_dataset_split", type=str, default='train',
+                        help="Split of the Hugging Face dataset to use.")
     parser.add_argument("--output_tfrecord_dir", type=str, default='../data/pt_tfrecord/',
                         help="Number of tfrecord example files.")
     parser.add_argument("--num_output_tfrecord", type=int, default=10,

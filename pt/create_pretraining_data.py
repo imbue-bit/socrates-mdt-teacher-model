@@ -8,6 +8,7 @@ from typing import Union, Optional
 from tfrecord import TFRecordWriter
 from tfrecord.tools import create_index
 import shutil
+from datasets import load_dataset
 # import synonyms
 
 from config import parse_args
@@ -570,33 +571,55 @@ def main():
         rng.shuffle(instances)
         write_instance_to_example_files(instances, FLAGS.max_seq_length, writers)
 
-    for _ in range(FLAGS.dupe_factor):
-        for text_file in FLAGS.input_files.split(','):
-            with open(text_file, 'r') as reader:
-                while True:
-                    line = reader.readline()
-                    if not line:
-                        break
-
-                    line = line.strip()
-
-                    # NSP or SOP: Empty lines are used as document delimiters
-                    if (not nsp_or_sop) or (not line):
-                        all_documents.append([])
-                        total += 1
-
+    if FLAGS.use_hf_dataset:
+        print(f"Loading Hugging Face dataset: {FLAGS.hf_dataset_name}, config: {FLAGS.hf_dataset_config}, split: {FLAGS.hf_dataset_split}")
+        dataset = load_dataset(FLAGS.hf_dataset_name, FLAGS.hf_dataset_config, split=FLAGS.hf_dataset_split, cache_dir=FLAGS.cache_dir)
+        text_column = 'text'  # assume the text column is 'text'
+        for _ in range(FLAGS.dupe_factor):
+            for example in dataset:
+                line = example[text_column].strip()
+                if not line:
+                    all_documents.append([])
+                    total += 1
+                else:
                     tokens = tokenizer(line, padding=False, add_special_tokens=False)._encodings[0]
                     tokens = Encodings(tokens, line)
                     if len(tokens) > 0:
                         all_documents[-1].append(tokens)
-
                         if FLAGS.random_queue_size > 0 and total % FLAGS.random_queue_size == 0:
                             _queue_write_to_files()
-
-                            # reset the queue of all documents
                             all_documents = []
+            _queue_write_to_files()
+            all_documents = [[]]  # reset for next dupe
+    else:
+    else:
+        for _ in range(FLAGS.dupe_factor):
+            for text_file in FLAGS.input_files.split(','):
+                with open(text_file, 'r') as reader:
+                    while True:
+                        line = reader.readline()
+                        if not line:
+                            break
 
-    _queue_write_to_files()
+                        line = line.strip()
+
+                        # NSP or SOP: Empty lines are used as document delimiters
+                        if (not nsp_or_sop) or (not line):
+                            all_documents.append([])
+                            total += 1
+
+                        tokens = tokenizer(line, padding=False, add_special_tokens=False)._encodings[0]
+                        tokens = Encodings(tokens, line)
+                        if len(tokens) > 0:
+                            all_documents[-1].append(tokens)
+
+                            if FLAGS.random_queue_size > 0 and total % FLAGS.random_queue_size == 0:
+                                _queue_write_to_files()
+
+                                # reset the queue of all documents
+                                all_documents = []
+
+        _queue_write_to_files()
 
     for writer in writers:
         writer.close()
