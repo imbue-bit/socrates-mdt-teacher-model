@@ -57,6 +57,16 @@ python sft2pt.py --dataset nvidia/OpenScience --config OS-Q3-235B-4 --split trai
 - `--output_file`: 输出文本文件路径
 - `--max_samples`: 最大处理样本数（可选）
 
+## 使用外部词汇表
+
+PyTorch版本支持使用外部词汇表文件：
+
+```bash
+python create_pretraining_data.py --vocab_file /path/to/vocab.txt --input_files your_text.txt --output_tfrecord_dir ../data/pt_tfrecord/
+```
+
+注意：使用外部vocab时，需要确保vocab格式与BERT tokenizer兼容，且模型的vocab_size与vocab文件匹配。
+
 ## 输出格式
 
 脚本将每个样本的 `input` 和 `output` 拼接为连续文本，用 `\n\n` 分隔不同样本，便于预训练数据创建。

@@ -27,8 +27,12 @@ FLAGS = parse_args()
 current_writer_index = 0
 
 
-def get_tokenizer(model_name, cache_dir):
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir, use_fast=True)
+def get_tokenizer(model_name, vocab_file, cache_dir):
+    if vocab_file is not None:
+        from transformers import BertTokenizer
+        tokenizer = BertTokenizer(vocab_file=vocab_file, do_lower_case=FLAGS.do_lower_case)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir, use_fast=True)
     global CLS_TOKEN, SEP_TOKEN, MASK_TOKEN, PAD_TOKEN, CLS_TOKEN_ID, SEP_TOKEN_ID, MASK_TOKEN_ID, PAD_TOKEN_ID
     CLS_TOKEN = tokenizer.cls_token
     SEP_TOKEN = tokenizer.sep_token
@@ -541,7 +545,7 @@ def main():
                     break
                 stop_words.add(word.strip())
 
-    tokenizer = get_tokenizer(FLAGS.model_name, cache_dir=FLAGS.cache_dir)
+    tokenizer = get_tokenizer(FLAGS.model_name, FLAGS.vocab_file, FLAGS.cache_dir)
     vocab_words = list(tokenizer.vocab.keys())
     rng = random.Random(FLAGS.seed)
 

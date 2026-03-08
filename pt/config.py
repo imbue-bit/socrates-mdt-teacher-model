@@ -25,6 +25,8 @@ def parse_args():
 
     parser.add_argument("--model_name", type=str, default='bert-base-chinese',
                         help="Which BERT model to use.")
+    parser.add_argument("--vocab_file", type=str, default=None,
+                        help="Path to custom vocabulary file. If provided, uses BertTokenizer with this vocab.")
     parser.add_argument("--cache_dir", type=str, default='../cache/',
                         help="Cache dir of BERT model.")
     parser.add_argument('--device', default='cuda', type=str, help="device type for model training",
