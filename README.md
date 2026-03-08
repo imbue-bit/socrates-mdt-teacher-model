@@ -42,12 +42,13 @@
 
 ```bash
 cd pt
-python sft2pt.py --dataset nvidia/OpenScience --split train --output_file ../data/sft_text.txt
+python sft2pt.py --dataset nvidia/OpenScience --config OS-Q3-235B-4 --split train --output_file ../data/sft_text.txt
 ```
 
 ## 参数说明
 
 - `--dataset`: HuggingFace数据集名称
+- `--config`: 数据集配置名称（如 OS-Q3-235B-4）
 - `--split`: 数据集分割（train/test等）
 - `--output_file`: 输出文本文件路径
 - `--max_samples`: 最大处理样本数（可选）

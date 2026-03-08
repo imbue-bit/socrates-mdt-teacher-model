@@ -13,20 +13,21 @@ import argparse
 from datasets import load_dataset
 import os
 
-def convert_sft_to_text(dataset_name, split, output_file, max_samples=None):
+def convert_sft_to_text(dataset_name, config_name, split, output_file, max_samples=None):
     """
     Convert SFT dataset to plain text for pre-training.
 
     Args:
         dataset_name: HuggingFace dataset name
+        config_name: Dataset config name
         split: Dataset split (train, test, etc.)
         output_file: Output text file path
         max_samples: Maximum number of samples to process (None for all)
     """
-    print(f"Loading dataset: {dataset_name}, split: {split}")
+    print(f"Loading dataset: {dataset_name}, config: {config_name}, split: {split}")
 
     # Load dataset
-    dataset = load_dataset(dataset_name, split=split)
+    dataset = load_dataset(dataset_name, config_name, split=split)
 
     print(f"Dataset loaded. Total samples: {len(dataset)}")
 
@@ -76,6 +77,8 @@ def main():
     parser = argparse.ArgumentParser(description="Convert SFT dataset to pre-training text")
     parser.add_argument("--dataset", type=str, default="nvidia/OpenScience",
                        help="HuggingFace dataset name")
+    parser.add_argument("--config", type=str, default="OS-Q3-235B-4",
+                       help="Dataset config name")
     parser.add_argument("--split", type=str, default="train",
                        help="Dataset split")
     parser.add_argument("--output_file", type=str, default="sft_text.txt",
@@ -88,7 +91,7 @@ def main():
     # Create output directory if needed
     os.makedirs(os.path.dirname(args.output_file), exist_ok=True)
 
-    convert_sft_to_text(args.dataset, args.split, args.output_file, args.max_samples)
+    convert_sft_to_text(args.dataset, args.config, args.split, args.output_file, args.max_samples)
 
 if __name__ == "__main__":
     main()
