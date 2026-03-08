@@ -4,6 +4,7 @@ import torch
 import shutil
 from torch.utils.data import DataLoader
 from tfrecord.torch.dataset import MultiTFRecordDataset
+import wandb
 
 from model import XBertForPreTraining, build_optimizer
 from export import download
@@ -86,6 +87,7 @@ def validate_with_early_stop(model, val_dataloader, vocab_size, best_perf, save_
     print('='*20, 'begin validating', '='*20)
     val_metrics = validate(model, val_dataloader, vocab_size)
     print('\n'.join([f'{k}: {v}' for k, v in val_metrics.items()]))
+    wandb.log({**val_metrics, save_type_tuple[0]: save_type_tuple[1]})
 
     if early_stop:
         key_name = 'masked_lm_accuracy'
@@ -123,6 +125,9 @@ def main(args):
     model = XBertForPreTraining.from_pretrained(args.model_name, cache_dir=args.cache_dir)
     vocab_size = model.config.vocab_size
     optimizer, scheduler = build_optimizer(model, args)
+    
+    wandb.init(entity="chunjiang-intelligence", project="socrates-mdt-teacher-model")
+    
     if torch.cuda.is_available() and args.device == 'cuda':
         if args.device_ids is None:
             device_ids = list(range(torch.cuda.device_count()))
@@ -159,6 +164,7 @@ def main(args):
                 print(' | '.join(['{}: {}'.format(key, output[key].item())
                                   for key in ['loss', 'masked_lm_loss', 'next_sentence_loss']
                                   if output[key] is not None]))
+                wandb.log({'step': step, **{key: output[key].item() for key in ['loss', 'masked_lm_loss', 'next_sentence_loss'] if output[key] is not None}})
 
             if not args.save_checkpoints_per_epoch and step % args.save_checkpoints_steps == 0:
                 flag = validate_with_early_stop(model, val_dataloader, vocab_size, best_perf,
