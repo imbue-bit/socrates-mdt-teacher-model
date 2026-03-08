@@ -28,6 +28,8 @@
 - 支持停用词不参与MASK
 - 支持单机多卡的预训练
 - 使用tfrecord作为存储介质，支持低内存资源下的超大语料使用
+- 动态masking、span masking、token替换检测
+- 支持使用 SFT 数据（抽散conversation用于pretraining）
 
 # SFT数据转换为预训练数据
 
