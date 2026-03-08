@@ -148,7 +148,7 @@ def write_instance_to_example_files(instances, max_seq_length, writers):
         features["labels"] = (masked_lm_labels, 'int')
         if instance.is_random_next is not None:
             sentence_order_label = 1 if instance.is_random_next else 0
-            features["next_sentence_label"] = ([sentence_order_label, 'int'])
+            features["next_sentence_label"] = ([sentence_order_label], 'int')
 
         writers[current_writer_index].write(features)
         current_writer_index = (current_writer_index + 1) % len(writers)
