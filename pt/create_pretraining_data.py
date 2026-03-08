@@ -150,6 +150,17 @@ def write_instance_to_example_files(instances, max_seq_length, writers):
             sentence_order_label = 1 if instance.is_random_next else 0
             features["next_sentence_label"] = ([sentence_order_label], 'int')
 
+        # debug: ensure all feature entries are properly formatted
+        for fk, fv in list(features.items()):
+            if not (isinstance(fv, tuple) and len(fv) == 2):
+                print(f"Malformed feature value for key {fk}: {fv}")
+            else:
+                val, dtype = fv
+                if not isinstance(dtype, str):
+                    print(f"Non-string dtype for key {fk}: {dtype}")
+                if dtype not in ("int", "float", "byte"):
+                    print(f"Unexpected dtype '{dtype}' for key {fk}")
+
         writers[current_writer_index].write(features)
         current_writer_index = (current_writer_index + 1) % len(writers)
 
