@@ -1,3 +1,5 @@
+*为 Socrates(MDT) 训练时需要的部分特殊引导信息训练的 BERT。*
+
 - [简介](#简介)
 - [特性](#特性)
 - [Requirements](#requirements)
