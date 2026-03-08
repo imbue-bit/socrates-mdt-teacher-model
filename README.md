@@ -29,6 +29,35 @@
 - 支持单机多卡的预训练
 - 使用tfrecord作为存储介质，支持低内存资源下的超大语料使用
 
+# SFT数据转换为预训练数据
+
+本仓库提供了一个脚本 `pt/sft2pt.py` 用于将监督微调（SFT）数据集转换为纯文本格式，用于BERT预训练。
+
+## 支持的数据集格式
+
+- **nvidia/OpenScience**: 包含 `input` 和 `output` 字段的对话/推理数据集
+- 其他类似格式的SFT数据集
+
+## 使用方法
+
+```bash
+cd pt
+python sft2pt.py --dataset nvidia/OpenScience --split train --output_file ../data/sft_text.txt
+```
+
+## 参数说明
+
+- `--dataset`: HuggingFace数据集名称
+- `--split`: 数据集分割（train/test等）
+- `--output_file`: 输出文本文件路径
+- `--max_samples`: 最大处理样本数（可选）
+
+## 输出格式
+
+脚本将每个样本的 `input` 和 `output` 拼接为连续文本，用 `\n\n` 分隔不同样本，便于预训练数据创建。
+
+然后可以使用转换后的文本文件作为 `create_pretraining_data.py` 的输入。
+
 # Requirements
 - **Python 3.x**
 
@@ -58,7 +87,7 @@ huggingface-hub==0.4.0
 - **拷贝仓库代码**
 
 ```sh
-git clone https://github.com/QunBB/bert-pretraining.git
+git clone https://github.com/imbue-bit/socrates-mdt-teacher-model.git
 
 cd tf
 
@@ -139,7 +168,7 @@ python run_pretraining_sess.py \
 - **拷贝仓库代码**
 
 ```sh
-git clone https://github.com/QunBB/bert-pretraining.git
+git clone https://github.com/imbue-bit/socrates-mdt-teacher-model.git
 
 cd pt
 
@@ -196,7 +225,7 @@ python run_pretraining.py \
 
 - **微调**
 
-见[run_finetuning.py](https://github.com/QunBB/bert-pretraining/blob/main/pt/run_finetuning.py)
+见[run_finetuning.py].
 
 # 要点
 
@@ -258,9 +287,3 @@ python run_pretraining.py \
 | eval_tfrecord_dir          | 验证集的tfrecord目录                                         | 字符串 |                         |
 | model_name                 | 使用的模型名称，该参数仅针对torch版本。https://huggingface.co/models | 字符串 | bert-base-chinese       |
 | cache_dir                  | 模型下载的缓存目录，该参数仅针对torch版本                    | 字符串 | ../cache/               |
-
-其他参数见:
-
-[config.py - tensorflow](https://github.com/QunBB/bert-pretraining/blob/main/tf/config.py)
-
-[config.py - torch](https://github.com/QunBB/bert-pretraining/blob/main/pt/config.py)
