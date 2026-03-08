@@ -607,7 +607,6 @@ def main():
             _queue_write_to_files()
             all_documents = [[]]  # reset for next dupe
     else:
-    else:
         for _ in range(FLAGS.dupe_factor):
             for text_file in FLAGS.input_files.split(','):
                 with open(text_file, 'r') as reader:
