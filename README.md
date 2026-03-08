@@ -18,7 +18,7 @@
 
 该仓库提供了tensorflow和torch两种框架的BERT预训练代码实现。
 
-> [!INFO]
+> [!TIPS]
 > 本分支特别为春江的 Socrates(MDT) 训练时作为一个参考模型使用，集成了现代预训练技术如动态masking、span masking、token替换检测等，以提供更高质量的预训练基础。
 
 
